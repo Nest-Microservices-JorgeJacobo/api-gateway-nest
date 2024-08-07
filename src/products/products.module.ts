@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ProductsController } from './products.controller';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { envs, PRODUCTS_SERVICES } from 'src/config';
-
 @Module({
   controllers: [ProductsController],
   providers: [],
@@ -14,7 +13,7 @@ import { envs, PRODUCTS_SERVICES } from 'src/config';
         host: envs.productsMicroservicesHost,
         port: envs.productsMicroservicesPort
       }
-    },
+    } 
   ])],
 })
 export class ProductsModule { }
