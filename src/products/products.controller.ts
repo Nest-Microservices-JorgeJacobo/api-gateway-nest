@@ -4,12 +4,12 @@ import { catchError, firstValueFrom } from 'rxjs';
 import { PaginationDto } from 'src/common';
 import { CreateProductDto } from 'src/common/dto/product/create-product.dto';
 import { UpdateProductDto } from 'src/common/dto/product/update-product.dto';
-import { PRODUCTS_SERVICES } from 'src/config';
+import { NATS_SERVICES, PRODUCTS_SERVICES } from 'src/config';
 
 @Controller('products')
 export class ProductsController {
   constructor(
-    @Inject(PRODUCTS_SERVICES) private readonly productsClient: ClientProxy
+    @Inject(NATS_SERVICES) private readonly client: ClientProxy
   ) {
 
   }
@@ -17,7 +17,7 @@ export class ProductsController {
   @Post()
   async createProduct(@Body() createProductDto: CreateProductDto) {
     try {
-      const product = await firstValueFrom(this.productsClient.send({ cmd: 'create_product' }, createProductDto));
+      const product = await firstValueFrom(this.client.send({ cmd: 'create_product' }, createProductDto));
       return product;
     } catch (error) {
       console.log(error)
@@ -27,7 +27,7 @@ export class ProductsController {
 
   @Get()
   findProducts(@Query() paginationDto: PaginationDto) {
-    return this.productsClient.send({ cmd: 'find_all_products' }, paginationDto);
+    return this.client.send({ cmd: 'find_all_products' }, paginationDto);
   }
 
   @Get(':id')
@@ -40,7 +40,7 @@ export class ProductsController {
     // )
 
     try {
-      const product = await firstValueFrom(this.productsClient.send({ cmd: 'find_one_product' }, { id }));
+      const product = await firstValueFrom(this.client.send({ cmd: 'find_one_product' }, { id }));
       return product;
     } catch (error) {
       console.log(error)
@@ -53,7 +53,7 @@ export class ProductsController {
   @Delete(':id')
   async deleteProduct(@Param('id', ParseIntPipe) id: number) {
     try {
-      const product = await firstValueFrom(this.productsClient.send({ cmd: 'delete_product' }, { id }));
+      const product = await firstValueFrom(this.client.send({ cmd: 'delete_product' }, { id }));
       return product;
     } catch (error) {
       console.log(error)
@@ -67,7 +67,7 @@ export class ProductsController {
     @Param('id',  ParseIntPipe) id: number,
     @Body() body: UpdateProductDto) {
     try {
-      const product = await firstValueFrom(this.productsClient.send({ cmd: 'update_product' }, {
+      const product = await firstValueFrom(this.client.send({ cmd: 'update_product' }, {
         id, 
         ...body
       }));
